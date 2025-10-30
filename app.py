@@ -1,259 +1,99 @@
-import streamlit as st
-import json, random, sqlite3, os, datetime, pandas as pd, requests, time
+import streamlit as st, json, random, sqlite3, os, datetime, pandas as pd, requests, time
 
-# -----------------------------------
-# CONFIGURATION
-# -----------------------------------
-st.set_page_config(page_title="DataProctor - Azure Data Engineer Assessment", layout="wide")
+st.set_page_config(page_title="🧠 DataProctor Pro – Azure Data Engineer Assessment", layout="wide")
+
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 QUESTIONS_FILE = os.path.join(APP_DIR, "questions_90.json")
-ACTIVE_FILE = os.path.join(APP_DIR, "active_questions.json")
 DB_FILE = os.path.join(APP_DIR, "responses.db")
+WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbw_ICFeCjBqVFlHzi7Taq_t85st13KfPVjCa6azWL3y0LbTY382UIpwrS7oetojPojYrg/exec"
 
-# 👉 Paste your Google Apps Script Web App URL here
-WEBHOOK_URL = "https://script.google.com/macros/s/<YOUR_SCRIPT_URL>/exec"
-
-# -----------------------------------
-# LOAD QUESTIONS
-# -----------------------------------
+# ---- Load or init questions ----
 if not os.path.exists(QUESTIONS_FILE):
-    st.error("❌ questions_90.json not found in app directory.")
-    st.stop()
+    json.dump([], open(QUESTIONS_FILE,"w"))
 
-with open(QUESTIONS_FILE, "r", encoding="utf-8") as f:
-    questions = json.load(f)
+with open(QUESTIONS_FILE) as f: questions = json.load(f)
 
-# Ensure category field exists
-for q in questions:
-    if "category" not in q:
-        q["category"] = "General"
-
-# -----------------------------------
-# INITIALIZE DATABASE
-# -----------------------------------
+# ---- Init DB ----
 conn = sqlite3.connect(DB_FILE, check_same_thread=False)
 c = conn.cursor()
-c.execute('''CREATE TABLE IF NOT EXISTS responses (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    candidate_name TEXT,
-    candidate_email TEXT,
-    started_at TEXT,
-    submitted_at TEXT,
-    question_id INTEGER,
-    category TEXT,
-    question_text TEXT,
-    answer_text TEXT
-)''')
+c.execute('''CREATE TABLE IF NOT EXISTS responses(
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+candidate_name TEXT,candidate_email TEXT,submitted_at TEXT,
+question_id INT,question_text TEXT,answer_text TEXT)''')
 conn.commit()
 
-# -----------------------------------
-# MAIN APP MODES
-# -----------------------------------
-mode = st.sidebar.selectbox("Select Mode", ["Candidate", "Admin"])
+# ---- Mode ----
+mode = st.sidebar.selectbox("Mode", ["Candidate","Admin"])
 
-# ===================================
-# 👩‍💻 CANDIDATE MODE
-# ===================================
-if mode == "Candidate":
-    if "started" not in st.session_state:
-        st.session_state.started = False
-
-    # Load active questions (if configured by admin)
-    active_ids = []
-    if os.path.exists(ACTIVE_FILE):
-        with open(ACTIVE_FILE, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            active_ids = data.get("active_ids", [])
-
-    questions_active = [q for q in questions if q["id"] in active_ids] if active_ids else questions
-
+# ============ Candidate ============
+if mode=="Candidate":
+    if "started" not in st.session_state: st.session_state.started=False
     if not st.session_state.started:
-        st.subheader("Candidate Information")
-        name = st.text_input("Full Name")
-        email = st.text_input("Email Address")
-
-        # Choose categories
-        categories = sorted(list(set([q["category"] for q in questions_active])))
-        selected_cats = st.multiselect("Select Categories for this Test", categories, default=categories)
-
-        # Filter questions
-        filtered_qs = [q for q in questions_active if q["category"] in selected_cats]
-        max_questions = len(filtered_qs)
-        question_count = st.number_input("Number of Questions", 1, max_questions, min(10, max_questions))
-        duration = st.number_input("Duration (minutes)", 5, 180, 60)
-        start = st.button("🚀 Start Test")
-
-        if start:
-            if not name or not email:
-                st.warning("Please enter both name and email.")
-            else:
-                st.session_state.started = True
-                st.session_state.name = name
-                st.session_state.email = email
-                st.session_state.qs = random.sample(filtered_qs, int(question_count))
-                st.session_state.idx = 0
-                st.session_state.answers = {}
-                st.session_state.start_time = datetime.datetime.utcnow().isoformat()
-                st.session_state.duration = duration
-                st.rerun()
-
-    else:
-        # -----------------------------------
-        # LIVE TIMER
-        # -----------------------------------
-        start_time = datetime.datetime.fromisoformat(st.session_state.start_time)
-        end_time = start_time + datetime.timedelta(minutes=st.session_state.duration)
-        remaining = end_time - datetime.datetime.utcnow()
-
-        if remaining.total_seconds() <= 0:
-            st.warning("⏰ Time’s up! Auto-submitting your test.")
-            st.session_state.submit = True
-        else:
-            # Format and display timer
-            h, rem = divmod(int(remaining.total_seconds()), 3600)
-            m, s = divmod(rem, 60)
-            if remaining.total_seconds() < 60:
-                st.warning(f"⏰ Hurry up! {m:02}:{s:02} left")
-            else:
-                st.info(f"🕒 Time Remaining: {h:02}:{m:02}:{s:02}")
-            time.sleep(1)
+        name=st.text_input("Name"); email=st.text_input("Email")
+        num_q=min(len(questions),st.number_input("Questions",1,50,5))
+        start=st.button("🚀 Start Test")
+        if start and name and email:
+            st.session_state.started=True
+            st.session_state.name=name; st.session_state.email=email
+            st.session_state.qs=random.sample(questions,int(num_q))
+            st.session_state.idx=0; st.session_state.answers={}
+            st.session_state.start=datetime.datetime.utcnow().isoformat()
+            st.session_state.duration=30
             st.rerun()
-
-        # -----------------------------------
-        # DISPLAY QUESTION
-        # -----------------------------------
-        q = st.session_state.qs[st.session_state.idx]
-        st.markdown(f"### Q{st.session_state.idx + 1}: {q['text']} ({q['category']})")
-        q_key = f"ans_{q['id']}_{st.session_state.idx}"
-        default_ans = st.session_state.answers.get(str(q["id"]), "")
-        ans = st.text_area("Your Answer", value=default_ans, key=q_key, height=150, placeholder="Type your answer here...")
-        st.session_state.answers[str(q["id"])] = ans
-
-        # Navigation Buttons
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            if st.button("⬅️ Previous") and st.session_state.idx > 0:
-                st.session_state.idx -= 1
-                st.rerun()
-        with col2:
-            if st.button("➡️ Next") and st.session_state.idx < len(st.session_state.qs) - 1:
-                st.session_state.idx += 1
-                st.rerun()
-        with col3:
-            if st.button("✅ Submit Test"):
-                st.session_state.submit = True
-
-        # -----------------------------------
-        # SUBMIT LOGIC + CONFIRMATION SCREEN
-        # -----------------------------------
-        if st.session_state.get("submit", False):
-            submitted_at = datetime.datetime.utcnow().isoformat()
-            responses_saved, errors = 0, []
-
-            for q in st.session_state.qs:
-                ans = st.session_state.answers.get(str(q["id"]), "")
-                try:
-                    c.execute(
-                        'INSERT INTO responses (candidate_name, candidate_email, started_at, submitted_at, question_id, category, question_text, answer_text) VALUES (?,?,?,?,?,?,?,?)',
-                        (st.session_state.name, st.session_state.email, st.session_state.start_time, submitted_at,
-                         q["id"], q["category"], q["text"], ans)
-                    )
-                    conn.commit()
-                    responses_saved += 1
-
-                    payload = {
-                        "name": st.session_state.name,
-                        "email": st.session_state.email,
-                        "question_id": q["id"],
-                        "question_text": q["text"],
-                        "answer": ans
-                    }
-                    try:
-                        requests.post(WEBHOOK_URL, json=payload, timeout=10)
-                    except Exception as e:
-                        errors.append(str(e))
-                except Exception as e:
-                    errors.append(str(e))
-
-            st.balloons()
-            st.success("✅ Your test has been submitted successfully!")
-            st.markdown(f"**Candidate:** {st.session_state.name}")
-            st.markdown(f"**Email:** {st.session_state.email}")
-            st.markdown(f"**Total Questions Answered:** {responses_saved}")
-            st.markdown(f"**Submitted At (UTC):** {submitted_at}")
-
-            if len(errors) == 0:
-                st.info("🗂️ Your responses were saved locally and synced to Google Sheets.")
-            else:
-                st.warning(f"⚠️ {len(errors)} issue(s) occurred while syncing to Google Sheets.")
-                st.text_area("Error Details", "\n".join(errors), height=120)
-
-            df_conf = pd.DataFrame([
-                {"Question": q["text"], "Answer": st.session_state.answers.get(str(q["id"]), "")}
-                for q in st.session_state.qs
-            ])
-            st.dataframe(df_conf)
-            st.session_state.clear()
-
-# ===================================
-# 👨‍💼 ADMIN MODE
-# ===================================
-if mode == "Admin":
-    pwd = st.sidebar.text_input("Admin Password", type="password")
-    if pwd != "admin123":
-        st.warning("Enter correct admin password.")
     else:
-        st.header("🧩 Admin Dashboard")
+        start_time=datetime.datetime.fromisoformat(st.session_state.start)
+        remain=datetime.timedelta(minutes=st.session_state.duration)-(datetime.datetime.utcnow()-start_time)
+        if remain.total_seconds()<=0: st.session_state.submit=True
+        h,rem=divmod(int(remain.total_seconds()),3600); m,s=divmod(rem,60)
+        st.info(f"⏱ {h:02}:{m:02}:{s:02} left")
 
-        if os.path.exists(ACTIVE_FILE):
-            with open(ACTIVE_FILE, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                active_ids = data.get("active_ids", [])
-        else:
-            active_ids = []
+        q=st.session_state.qs[st.session_state.idx]
+        st.subheader(f"Q{st.session_state.idx+1}: {q.get('text')}")
+        typ=q.get("type","text")
+        if typ=="mcq": ans=st.radio("Select:",q.get("options",[]),key=f"a{q['id']}")
+        else: ans=st.text_area("Answer:",st.session_state.answers.get(str(q['id']),""),key=f"a{q['id']}")
+        st.session_state.answers[str(q['id'])]=ans
 
-        # Add new question
-        with st.expander("➕ Add New Question"):
-            with st.form("add_question_form", clear_on_submit=True):
-                new_text = st.text_area("Enter Question Text", height=100)
-                new_type = st.selectbox("Question Type", ["text", "longtext"])
-                new_cat = st.selectbox("Category", sorted(list(set([q["category"] for q in questions])) + ["New Category"]))
-                submitted = st.form_submit_button("Add Question")
-                if submitted and new_text:
-                    new_id = max([q["id"] for q in questions]) + 1
-                    questions.append({"id": new_id, "text": new_text, "type": new_type, "category": new_cat})
-                    with open(QUESTIONS_FILE, "w", encoding="utf-8") as f:
-                        json.dump(questions, f, indent=2, ensure_ascii=False)
-                    st.success(f"✅ Added Question #{new_id}")
+        c1,c2,c3=st.columns(3)
+        if c1.button("⬅️ Prev") and st.session_state.idx>0: st.session_state.idx-=1; st.rerun()
+        if c2.button("➡️ Next") and st.session_state.idx<len(st.session_state.qs)-1: st.session_state.idx+=1; st.rerun()
+        if c3.button("✅ Submit"): st.session_state.submit=True
 
-        # Filter by category
-        st.subheader("📘 Question Bank")
-        categories = sorted(list(set([q["category"] for q in questions])))
-        selected_cats = st.multiselect("Filter by Category", categories, default=categories)
-        filtered_qs = [q for q in questions if q["category"] in selected_cats]
+        if st.session_state.get("submit",False):
+            sub=datetime.datetime.utcnow().isoformat()
+            for q in st.session_state.qs:
+                ans=st.session_state.answers.get(str(q['id']),"")
+                c.execute("INSERT INTO responses(candidate_name,candidate_email,submitted_at,question_id,question_text,answer_text) VALUES (?,?,?,?,?,?)",
+                    (st.session_state.name,st.session_state.email,sub,q["id"],q["text"],ans))
+                try: requests.post(WEBHOOK_URL,json={"name":st.session_state.name,"email":st.session_state.email,"question_id":q["id"],"question_text":q["text"],"answer":ans})
+                except: pass
+            conn.commit()
+            st.success("✅ Submitted successfully and synced to Google Sheet.")
+            st.balloons(); st.session_state.clear()
 
-        selected_ids = st.multiselect(
-            "Select Active Questions for Candidate Test",
-            [q["id"] for q in filtered_qs],
-            default=active_ids,
-            format_func=lambda x: f"Q{x}: {next((q['text'] for q in questions if q['id'] == x), '')[:70]}..."
-        )
+# ============ Admin ============
+if mode=="Admin":
+    if st.sidebar.text_input("Password",type="password")!="admin123":
+        st.warning("Enter admin123"); st.stop()
+    st.header("🧩 Admin Dashboard")
 
-        if st.button("💾 Save Active Selection"):
-            with open(ACTIVE_FILE, "w", encoding="utf-8") as f:
-                json.dump({"active_ids": selected_ids}, f, indent=2)
-            st.success(f"Saved {len(selected_ids)} active questions.")
+    with st.expander("➕ Add Question"):
+        with st.form("addq",clear_on_submit=True):
+            t=st.text_area("Question text"); typ=st.selectbox("Type",["text","mcq","code"])
+            opts=[]; correct=""
+            if typ=="mcq":
+                opts=st.text_area("Options (comma separated)").split(",")
+                correct=st.text_input("Correct answer")
+            cat=st.text_input("Category","General")
+            if st.form_submit_button("Add") and t:
+                qid=max([q["id"] for q in questions],default=0)+1
+                q={"id":qid,"text":t,"type":typ,"category":cat}
+                if typ=="mcq": q["options"]=opts; q["answer"]=correct
+                questions.append(q); json.dump(questions,open(QUESTIONS_FILE,"w"),indent=2)
+                st.success(f"Added Q{qid}")
 
-        st.dataframe(pd.DataFrame(questions))
-
-        st.subheader("📊 Recent Submissions")
-        df = pd.read_sql_query(
-            'SELECT candidate_name, candidate_email, submitted_at, COUNT(*) as q_count FROM responses GROUP BY candidate_email, submitted_at ORDER BY submitted_at DESC LIMIT 20',
-            conn
-        )
-        st.dataframe(df)
-
-        if st.button("📥 Download All Responses"):
-            df_all = pd.read_sql_query('SELECT * FROM responses', conn)
-            csv = df_all.to_csv(index=False).encode('utf-8')
-            st.download_button("Download CSV", csv, file_name="responses_export.csv")
+    st.subheader("Questions"); st.dataframe(pd.DataFrame(questions))
+    st.subheader("Responses"); df=pd.read_sql_query("select * from responses order by id desc",conn)
+    st.dataframe(df)
+    csv=df.to_csv(index=False).encode("utf-8")
+    st.download_button("Download CSV",csv,"responses.csv","text/csv")
