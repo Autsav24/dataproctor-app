@@ -5,7 +5,7 @@ st.set_page_config(page_title="🧠 DataProctor Pro – Azure Data Engineer Asse
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 QUESTIONS_FILE = os.path.join(APP_DIR, "questions_90.json")
 DB_FILE = os.path.join(APP_DIR, "responses.db")
-WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbw_ICFeCjBqVFlHzi7Taq_t85st13KfPVjCa6azWL3y0LbTY382UIpwrS7oetojPojYrg/exec"
+WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwYBR-ilPyQotp_aP-eittB4OVhGkafi-qEfs1JMpWcpjQdEuUFn6S2qA1qq57gadQilA/exec"
 
 # ---- Load or init questions ----
 if not os.path.exists(QUESTIONS_FILE):
