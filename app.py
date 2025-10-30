@@ -98,8 +98,18 @@ if mode == "Candidate":
 
         q = st.session_state.qs[st.session_state.idx]
         st.markdown(f"### Q{st.session_state.idx + 1}: {q['text']}")
-        ans = st.text_area("Your Answer", value=st.session_state.answers.get(str(q["id"]), ""), height=150)
+        # Reset widget key dynamically when index changes
+        question_key = f"ans_{q['id']}_{st.session_state.idx}"
+        default_answer = st.session_state.answers.get(str(q["id"]), "")
+        ans = st.text_area(
+            "Your Answer",
+            value=default_answer,
+            key=question_key,
+            height=150,
+            placeholder="Type your answer here..."
+        )
         st.session_state.answers[str(q["id"])] = ans
+
 
         col1, col2, col3 = st.columns(3)
         with col1:
