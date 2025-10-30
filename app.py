@@ -85,7 +85,7 @@ if mode == "Candidate":
                 st.session_state.answers = {}
                 st.session_state.start_time = datetime.datetime.utcnow().isoformat()
                 st.session_state.duration = duration
-                st.experimental_rerun()
+                st.rerun()
 
     else:
         # Timer
@@ -105,11 +105,11 @@ if mode == "Candidate":
         with col1:
             if st.button("⬅️ Previous") and st.session_state.idx > 0:
                 st.session_state.idx -= 1
-                st.experimental_rerun()
+                st.rerun()
         with col2:
             if st.button("➡️ Next") and st.session_state.idx < len(st.session_state.qs) - 1:
                 st.session_state.idx += 1
-                st.experimental_rerun()
+                st.rerun()
         with col3:
             if st.button("✅ Submit Test"):
                 st.session_state.submit = True
@@ -143,7 +143,7 @@ if mode == "Candidate":
             conn.commit()
             st.success("✅ Test submitted successfully! Responses saved locally and sent to Google Sheet.")
             st.session_state.clear()
-            st.experimental_rerun()
+            st.rerun()
 
 # -----------------------------
 # 👨‍💼 ADMIN MODE
