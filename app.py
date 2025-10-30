@@ -1,8 +1,8 @@
 import streamlit as st
-import json, random, sqlite3, os, datetime, pandas as pd
+import json, random, sqlite3, os, datetime, pandas as pd, requests
 
 # -----------------------------
-# ✅ SETUP & FILE PATHS
+# ✅ SAFE PATHS
 # -----------------------------
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 QUESTIONS_FILE = os.path.join(APP_DIR, "questions_90.json")
@@ -10,24 +10,22 @@ ACTIVE_FILE = os.path.join(APP_DIR, "active_questions.json")
 DB_FILE = os.path.join(APP_DIR, "responses.db")
 
 # -----------------------------
+# ✅ GOOGLE SHEET URL
+# -----------------------------
+WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbx8MD76KZgBrVj_qDO75lp9osctLDrHKdoPUX2tcwu-frHXnJ4fL7xsgDs-R6nmB7Fo4w/exec"
+
+# -----------------------------
 # ✅ LOAD QUESTIONS
 # -----------------------------
 if not os.path.exists(QUESTIONS_FILE):
-    st.error("❌ questions_90.json not found. Please upload it in the same folder as app.py.")
+    st.error("❌ questions_90.json not found.")
     st.stop()
 
-try:
-    with open(QUESTIONS_FILE, "r", encoding="utf-8") as f:
-        questions = json.load(f)
-    if not isinstance(questions, list) or len(questions) == 0:
-        st.error("⚠️ questions_90.json is empty or invalid.")
-        st.stop()
-except Exception as e:
-    st.error(f"❌ Error loading questions.json: {e}")
-    st.stop()
+with open(QUESTIONS_FILE, "r", encoding="utf-8") as f:
+    questions = json.load(f)
 
 # -----------------------------
-# ✅ DB INIT
+# ✅ INIT DATABASE
 # -----------------------------
 conn = sqlite3.connect(DB_FILE, check_same_thread=False)
 c = conn.cursor()
@@ -44,7 +42,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS responses (
 conn.commit()
 
 # -----------------------------
-# 🌐 PAGE CONFIG
+# ✅ STREAMLIT CONFIG
 # -----------------------------
 st.set_page_config(page_title="DataProctor - Azure Data Engineer Assessment", layout="wide")
 st.title("🧠 DataProctor - Azure Data Engineer Assessment")
@@ -58,20 +56,18 @@ if mode == "Candidate":
     if 'started' not in st.session_state:
         st.session_state.started = False
 
-    # Load active question list
     active_ids = []
     if os.path.exists(ACTIVE_FILE):
         with open(ACTIVE_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
             active_ids = data.get("active_ids", [])
 
-    # Filter questions
     active_questions = [q for q in questions if q["id"] in active_ids] if active_ids else questions
 
     if not st.session_state.started:
-        st.write("### Enter your details to start the assessment")
+        st.subheader("Candidate Details")
         name = st.text_input("Full Name")
-        email = st.text_input("Email")
+        email = st.text_input("Email Address")
         max_questions = len(active_questions)
         question_count = st.number_input("Number of Questions", 1, max_questions, min(10, max_questions))
         duration = st.number_input("Duration (minutes)", 10, 180, 60)
@@ -120,14 +116,32 @@ if mode == "Candidate":
 
         st.sidebar.info(f"Time remaining: {str(remaining).split('.')[0]}")
 
+        # -----------------------------
+        # ✅ SUBMIT LOGIC
+        # -----------------------------
         if st.session_state.get("submit", False):
             submitted_at = datetime.datetime.utcnow().isoformat()
+
             for q in st.session_state.qs:
                 ans = st.session_state.answers.get(str(q["id"]), "")
+                # Save to local DB
                 c.execute('INSERT INTO responses (candidate_name, candidate_email, started_at, submitted_at, question_id, question_text, answer_text) VALUES (?,?,?,?,?,?,?)',
                           (st.session_state.name, st.session_state.email, st.session_state.start_time, submitted_at, q["id"], q["text"], ans))
+                # Push to Google Sheets
+                payload = {
+                    "name": st.session_state.name,
+                    "email": st.session_state.email,
+                    "question_id": q["id"],
+                    "question_text": q["text"],
+                    "answer": ans
+                }
+                try:
+                    requests.post(WEBHOOK_URL, json=payload, timeout=10)
+                except Exception as e:
+                    st.warning(f"⚠️ Could not push to Google Sheet: {e}")
+
             conn.commit()
-            st.success("✅ Your test has been submitted successfully!")
+            st.success("✅ Test submitted successfully! Responses saved locally and sent to Google Sheet.")
             st.session_state.clear()
             st.experimental_rerun()
 
@@ -141,7 +155,6 @@ if mode == "Admin":
     else:
         st.header("🧩 Admin Dashboard")
 
-        # Load or initialize active IDs
         if os.path.exists(ACTIVE_FILE):
             with open(ACTIVE_FILE, "r", encoding="utf-8") as f:
                 data = json.load(f)
@@ -154,15 +167,15 @@ if mode == "Admin":
             with st.form("add_question_form", clear_on_submit=True):
                 new_text = st.text_area("Enter Question Text", height=100)
                 new_type = st.selectbox("Question Type", ["text", "longtext"])
-                submit_q = st.form_submit_button("Add Question")
-                if submit_q and new_text:
+                submitted = st.form_submit_button("Add Question")
+                if submitted and new_text:
                     new_id = max([q["id"] for q in questions]) + 1
                     questions.append({"id": new_id, "text": new_text, "type": new_type})
                     with open(QUESTIONS_FILE, "w", encoding="utf-8") as f:
                         json.dump(questions, f, indent=2, ensure_ascii=False)
                     st.success(f"✅ Added Question #{new_id}")
 
-        # Select active questions
+        # Activate questions
         st.subheader("📘 Question Bank")
         selected_ids = st.multiselect(
             "Select active questions for candidate test",
@@ -170,21 +183,18 @@ if mode == "Admin":
             default=active_ids,
             format_func=lambda x: f"Q{x}: {next((q['text'] for q in questions if q['id'] == x), '')[:60]}..."
         )
+
         if st.button("💾 Save Active Selection"):
             with open(ACTIVE_FILE, "w", encoding="utf-8") as f:
                 json.dump({"active_ids": selected_ids}, f, indent=2)
             st.success(f"Saved {len(selected_ids)} active questions.")
 
-        # Show all questions
         df_q = pd.DataFrame(questions)
         st.dataframe(df_q)
 
         st.subheader("📊 Recent Submissions")
-        df_resp = pd.read_sql_query(
-            'SELECT candidate_name, candidate_email, submitted_at, COUNT(*) as q_count FROM responses GROUP BY candidate_email, submitted_at ORDER BY submitted_at DESC LIMIT 20',
-            conn
-        )
-        st.dataframe(df_resp)
+        df = pd.read_sql_query('SELECT candidate_name, candidate_email, submitted_at, COUNT(*) as q_count FROM responses GROUP BY candidate_email, submitted_at ORDER BY submitted_at DESC LIMIT 20', conn)
+        st.dataframe(df)
 
         if st.button("📥 Download All Responses"):
             df_all = pd.read_sql_query('SELECT * FROM responses', conn)
