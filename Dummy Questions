@@ -1,0 +1,191 @@
+A. SQL (Advanced + Analytical)
+
+What’s the difference between INNER JOIN, LEFT JOIN, and FULL JOIN?
+
+How do you find records present in one table but not in another?
+
+Write a query to find employees who earn more than their manager.
+
+How can you detect and handle duplicate rows in a table with no unique key?
+
+Write SQL to find customers who purchased from all available product categories.
+
+What’s the difference between RANK(), DENSE_RANK(), and ROW_NUMBER()?
+
+Write SQL to find the 2nd and 3rd highest salary using one query.
+
+How do you calculate a running total of sales per region ordered by date?
+
+Write query to find 7-day moving average of daily sales per product.
+
+How would you find the first and last purchase date per customer?
+
+Find departments where the average salary is higher than the company average.
+
+How do you find customers who purchased in January but not February?
+
+Calculate percentage contribution of each product to total sales.
+
+Find the date when cumulative revenue first exceeded 50% of total.
+
+Find customers who made purchases in every month of a given year.
+
+What’s the difference between a CTE and a subquery?
+
+Write a recursive CTE to show manager–employee hierarchy.
+
+How do you debug a slow SQL query?
+
+Difference between UNION and UNION ALL, and which performs better.
+
+How would you remove duplicates from a table with millions of rows?
+
+B. Azure Data Factory (ADF)
+
+Explain an ADF pipeline you’ve built end-to-end.
+
+How do you process multiple files dynamically in a folder?
+
+Difference between parameters and variables in ADF.
+
+How do you pass data between pipelines (parent to child)?
+
+What’s the purpose of using Lookup and ForEach activities together?
+
+How do you design incremental loads in ADF?
+
+How do you track last modified date between runs (watermarking)?
+
+If one file fails mid-pipeline, how would you resume processing from that file?
+
+What’s the difference between tumbling window trigger and schedule trigger?
+
+How do you handle schema changes in source files dynamically?
+
+Difference between Azure IR and Self-Hosted IR.
+
+How do you manage credentials securely in ADF?
+
+How can you automatically alert on pipeline failures?
+
+What’s the difference between Debug mode and Trigger mode?
+
+How do you optimize large Copy Activities (parallelism, staging, batch size)?
+
+C. Databricks / PySpark / Delta Lake
+
+Difference between select, selectExpr, and withColumn.
+
+How do you handle null values and missing data in PySpark?
+
+Explain difference between repartition() and coalesce().
+
+What’s a broadcast join, and when would you use it?
+
+Explain how Spark divides work into jobs, stages, and tasks.
+
+What is Delta Lake, and why use it over Parquet?
+
+How do you perform upserts (MERGE) into a Delta table?
+
+Explain OPTIMIZE and ZORDER BY — when do you use them?
+
+What is Time Travel in Delta Lake, and when is it useful?
+
+How does Delta Lake ensure ACID compliance on cloud storage?
+
+What causes data skew in Spark, and how do you fix it?
+
+Explain Adaptive Query Execution (AQE) and its benefits.
+
+What are small file problems, and how do you resolve them?
+
+How do you cache or persist data — and when should you not?
+
+What is the Catalyst Optimizer, and how does it improve performance?
+
+D. Agile / Scrum / Leadership
+
+What are your responsibilities as a Scrum Master or Scrum Lead?
+
+How do you plan sprint capacity and allocate stories for a data team?
+
+Difference between Sprint Review and Sprint Retrospective.
+
+How do you handle mid-sprint requirement changes?
+
+How do you measure sprint velocity and ensure continuous improvement?
+
+How do you manage a developer who consistently misses sprint deadlines?
+
+How do you handle cross-team dependencies (Data ↔ QA ↔ BI)?
+
+Describe a time when you balanced technical delivery and team leadership.
+
+How do you communicate blockers and risks to business stakeholders?
+
+Give an example of managing a production issue under time pressure.
+
+E. Real-World Scenarios
+
+Your Databricks job that normally completes in 15 mins now takes 45 mins — how do you troubleshoot?
+
+Your ADF pipeline succeeded but record count is lower than expected — how do you debug?
+
+How would you design a file-driven ADF → Databricks workflow for daily ingestion?
+
+How do you implement data validation checks before loading into the Gold layer?
+
+How do you manage pipeline versioning and rollback in ADF?
+
+A file arrives twice — how do you ensure duplicates aren’t processed again?
+
+You need to transfer data from REST API → ADLS → SQL DB — describe your approach.
+
+How would you join two very large Delta tables efficiently?
+
+How do you monitor cost usage for Databricks jobs and optimize?
+
+What’s your approach to peer review and knowledge sharing in a data team?
+
+F. Requirement Gathering & Communication (NEW SECTION)
+
+When a new data integration request comes from the implementation team, what’s your first step?
+
+How do you clarify unclear or incomplete business requirements before starting development?
+
+How do you translate business or functional requirements into data mapping logic?
+
+What key questions do you ask the implementation or BA team during requirement discussions?
+
+How do you handle situations where business terms (like “Active Customer”) are ambiguous?
+
+How do you capture and maintain requirement details for future reference?
+
+How do you confirm that your data pipeline design meets the implementation team’s expectations?
+
+What’s your approach if the implementation team changes requirements after development starts?
+
+How do you communicate data limitations or feasibility issues to business users?
+
+How do you document field-level transformations or mappings for sign-off?
+
+How do you work with the implementation team to define data validation or acceptance criteria?
+
+Give an example of a time when you caught a business logic gap during requirement gathering.
+
+How do you handle conflicting interpretations of a requirement between tech and business teams?
+
+What’s your process for ensuring data definitions (e.g., KPIs, metrics) are consistent across systems?
+
+How do you collaborate with QA or UAT teams to ensure the data meets requirements?
+
+How do you ensure that non-technical stakeholders understand your data model or pipeline flow?
+
+How do you capture changes discussed in requirement meetings (tools, versioning, ownership)?
+
+How do you ensure traceability from requirement → design → implementation → test?
+
+What’s your approach to conducting or attending requirement walkthrough meetings?
+
+How do you handle cases where implementation deadlines are unrealistic based on the data scope?
