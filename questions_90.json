@@ -1,0 +1,452 @@
+[
+  {
+    "id": 1,
+    "text": "INNER JOIN vs LEFT JOIN vs FULL JOIN",
+    "type": "text"
+  },
+  {
+    "id": 2,
+    "text": "Find records in one table but not in another",
+    "type": "text"
+  },
+  {
+    "id": 3,
+    "text": "Write a query to find employees who earn more than their manager",
+    "type": "text"
+  },
+  {
+    "id": 4,
+    "text": "How can you detect and handle duplicate rows in a table with no unique key",
+    "type": "text"
+  },
+  {
+    "id": 5,
+    "text": "Write SQL to find customers who purchased from all available product categories",
+    "type": "text"
+  },
+  {
+    "id": 6,
+    "text": "What’s the difference between RANK(), DENSE_RANK(), and ROW_NUMBER()",
+    "type": "text"
+  },
+  {
+    "id": 7,
+    "text": "Write SQL to find the 2nd and 3rd highest salary using one query",
+    "type": "text"
+  },
+  {
+    "id": 8,
+    "text": "How do you calculate a running total of sales per region ordered by date",
+    "type": "text"
+  },
+  {
+    "id": 9,
+    "text": "Write query to find 7-day moving average of daily sales per product",
+    "type": "text"
+  },
+  {
+    "id": 10,
+    "text": "How would you find the first and last purchase date per customer",
+    "type": "text"
+  },
+  {
+    "id": 11,
+    "text": "Find departments where the average salary is higher than the company average",
+    "type": "text"
+  },
+  {
+    "id": 12,
+    "text": "How do you find customers who purchased in January but not February",
+    "type": "text"
+  },
+  {
+    "id": 13,
+    "text": "Calculate percentage contribution of each product to total sales",
+    "type": "text"
+  },
+  {
+    "id": 14,
+    "text": "Find the date when cumulative revenue first exceeded 50% of total",
+    "type": "text"
+  },
+  {
+    "id": 15,
+    "text": "Find customers who made purchases in every month of a given year",
+    "type": "text"
+  },
+  {
+    "id": 16,
+    "text": "What’s the difference between a CTE and a subquery",
+    "type": "text"
+  },
+  {
+    "id": 17,
+    "text": "Write a recursive CTE to show manager–employee hierarchy",
+    "type": "text"
+  },
+  {
+    "id": 18,
+    "text": "How do you debug a slow SQL query",
+    "type": "text"
+  },
+  {
+    "id": 19,
+    "text": "Difference between UNION and UNION ALL, and which performs better",
+    "type": "text"
+  },
+  {
+    "id": 20,
+    "text": "How would you remove duplicates from a table with millions of rows",
+    "type": "text"
+  },
+  {
+    "id": 21,
+    "text": "Explain an ADF pipeline you’ve built end-to-end",
+    "type": "text"
+  },
+  {
+    "id": 22,
+    "text": "How do you process multiple files dynamically in a folder",
+    "type": "text"
+  },
+  {
+    "id": 23,
+    "text": "Difference between parameters and variables in ADF",
+    "type": "text"
+  },
+  {
+    "id": 24,
+    "text": "How do you pass data between pipelines (parent to child)",
+    "type": "text"
+  },
+  {
+    "id": 25,
+    "text": "What’s the purpose of using Lookup and ForEach activities together",
+    "type": "text"
+  },
+  {
+    "id": 26,
+    "text": "How do you design incremental loads in ADF",
+    "type": "text"
+  },
+  {
+    "id": 27,
+    "text": "How do you track last modified date between runs (watermarking)",
+    "type": "text"
+  },
+  {
+    "id": 28,
+    "text": "If one file fails mid-pipeline, how would you resume processing from that file",
+    "type": "text"
+  },
+  {
+    "id": 29,
+    "text": "What’s the difference between tumbling window trigger and schedule trigger",
+    "type": "text"
+  },
+  {
+    "id": 30,
+    "text": "How do you handle schema changes in source files dynamically",
+    "type": "text"
+  },
+  {
+    "id": 31,
+    "text": "Difference between Azure IR and Self-Hosted IR",
+    "type": "text"
+  },
+  {
+    "id": 32,
+    "text": "How do you manage credentials securely in ADF",
+    "type": "text"
+  },
+  {
+    "id": 33,
+    "text": "How can you automatically alert on pipeline failures",
+    "type": "text"
+  },
+  {
+    "id": 34,
+    "text": "What’s the difference between Debug mode and Trigger mode",
+    "type": "text"
+  },
+  {
+    "id": 35,
+    "text": "How do you optimize large Copy Activities (e.g., parallelism, staging, batch size)",
+    "type": "text"
+  },
+  {
+    "id": 36,
+    "text": "Difference between select, selectExpr, and withColumn in PySpark",
+    "type": "text"
+  },
+  {
+    "id": 37,
+    "text": "How do you handle null values and missing data in PySpark",
+    "type": "text"
+  },
+  {
+    "id": 38,
+    "text": "Explain difference between repartition() and coalesce()",
+    "type": "text"
+  },
+  {
+    "id": 39,
+    "text": "What’s a broadcast join, and when would you use it",
+    "type": "text"
+  },
+  {
+    "id": 40,
+    "text": "Explain how Spark divides work into jobs, stages, and tasks",
+    "type": "text"
+  },
+  {
+    "id": 41,
+    "text": "What is Delta Lake, and why use it over Parquet",
+    "type": "text"
+  },
+  {
+    "id": 42,
+    "text": "How do you perform upserts (MERGE) into a Delta table",
+    "type": "text"
+  },
+  {
+    "id": 43,
+    "text": "Explain OPTIMIZE and ZORDER BY — when do you use them",
+    "type": "text"
+  },
+  {
+    "id": 44,
+    "text": "What is Time Travel in Delta Lake, and when is it useful",
+    "type": "text"
+  },
+  {
+    "id": 45,
+    "text": "How does Delta Lake ensure ACID compliance on cloud storage",
+    "type": "text"
+  },
+  {
+    "id": 46,
+    "text": "What causes data skew in Spark, and how do you fix it",
+    "type": "text"
+  },
+  {
+    "id": 47,
+    "text": "Explain Adaptive Query Execution (AQE) and its benefits",
+    "type": "text"
+  },
+  {
+    "id": 48,
+    "text": "What are small file problems, and how do you resolve them",
+    "type": "text"
+  },
+  {
+    "id": 49,
+    "text": "How do you cache or persist data — and when should you not",
+    "type": "text"
+  },
+  {
+    "id": 50,
+    "text": "What is the Catalyst Optimizer, and how does it improve performance",
+    "type": "text"
+  },
+  {
+    "id": 51,
+    "text": "What are your responsibilities as a Scrum Master or Scrum Lead",
+    "type": "text"
+  },
+  {
+    "id": 52,
+    "text": "How do you plan sprint capacity and allocate stories for a data team",
+    "type": "text"
+  },
+  {
+    "id": 53,
+    "text": "Difference between Sprint Review and Sprint Retrospective",
+    "type": "text"
+  },
+  {
+    "id": 54,
+    "text": "How do you handle mid-sprint requirement changes",
+    "type": "text"
+  },
+  {
+    "id": 55,
+    "text": "How do you measure sprint velocity and ensure continuous improvement",
+    "type": "text"
+  },
+  {
+    "id": 56,
+    "text": "How do you manage a developer who consistently misses sprint deadlines",
+    "type": "text"
+  },
+  {
+    "id": 57,
+    "text": "How do you handle cross-team dependencies (Data ↔ QA ↔ BI)",
+    "type": "text"
+  },
+  {
+    "id": 58,
+    "text": "Describe a time when you balanced technical delivery and team leadership",
+    "type": "text"
+  },
+  {
+    "id": 59,
+    "text": "How do you communicate blockers and risks to business stakeholders",
+    "type": "text"
+  },
+  {
+    "id": 60,
+    "text": "Give an example of managing a production issue under time pressure",
+    "type": "text"
+  },
+  {
+    "id": 61,
+    "text": "Your Databricks job that normally completes in 15 mins now takes 45 mins — how do you troubleshoot",
+    "type": "text"
+  },
+  {
+    "id": 62,
+    "text": "Your ADF pipeline succeeded but record count is lower than expected — how do you debug",
+    "type": "text"
+  },
+  {
+    "id": 63,
+    "text": "How would you design a file-driven ADF → Databricks workflow for daily ingestion",
+    "type": "text"
+  },
+  {
+    "id": 64,
+    "text": "How do you implement data validation checks before loading into the Gold layer",
+    "type": "text"
+  },
+  {
+    "id": 65,
+    "text": "How do you manage pipeline versioning and rollback in ADF",
+    "type": "text"
+  },
+  {
+    "id": 66,
+    "text": "A file arrives twice — how do you ensure duplicates aren’t processed again",
+    "type": "text"
+  },
+  {
+    "id": 67,
+    "text": "You need to transfer data from REST API → ADLS → SQL DB — describe your approach",
+    "type": "text"
+  },
+  {
+    "id": 68,
+    "text": "How would you join two very large Delta tables efficiently",
+    "type": "text"
+  },
+  {
+    "id": 69,
+    "text": "How do you monitor cost usage for Databricks jobs and optimize",
+    "type": "text"
+  },
+  {
+    "id": 70,
+    "text": "What’s your approach to peer review and knowledge sharing in a data team",
+    "type": "text"
+  },
+  {
+    "id": 71,
+    "text": "When a new data integration request comes from the implementation team, what’s your first step",
+    "type": "text"
+  },
+  {
+    "id": 72,
+    "text": "How do you clarify unclear or incomplete business requirements before starting development",
+    "type": "text"
+  },
+  {
+    "id": 73,
+    "text": "How do you translate business or functional requirements into data mapping logic",
+    "type": "text"
+  },
+  {
+    "id": 74,
+    "text": "What key questions do you ask the implementation or BA team during requirement discussions",
+    "type": "text"
+  },
+  {
+    "id": 75,
+    "text": "How do you handle situations where business terms (like 'Active Customer') are ambiguous",
+    "type": "text"
+  },
+  {
+    "id": 76,
+    "text": "How do you capture and maintain requirement details for future reference",
+    "type": "text"
+  },
+  {
+    "id": 77,
+    "text": "How do you confirm that your data pipeline design meets the implementation team’s expectations",
+    "type": "text"
+  },
+  {
+    "id": 78,
+    "text": "What’s your approach if the implementation team changes requirements after development starts",
+    "type": "text"
+  },
+  {
+    "id": 79,
+    "text": "How do you communicate data limitations or feasibility issues to business users",
+    "type": "text"
+  },
+  {
+    "id": 80,
+    "text": "How do you document field-level transformations or mappings for sign-off",
+    "type": "text"
+  },
+  {
+    "id": 81,
+    "text": "How do you work with the implementation team to define data validation or acceptance criteria",
+    "type": "text"
+  },
+  {
+    "id": 82,
+    "text": "Give an example of a time when you caught a business logic gap during requirement gathering",
+    "type": "text"
+  },
+  {
+    "id": 83,
+    "text": "How do you handle conflicting interpretations of a requirement between tech and business teams",
+    "type": "text"
+  },
+  {
+    "id": 84,
+    "text": "What’s your process for ensuring data definitions (e.g., KPIs, metrics) are consistent across systems",
+    "type": "text"
+  },
+  {
+    "id": 85,
+    "text": "How do you collaborate with QA or UAT teams to ensure the data meets requirements",
+    "type": "text"
+  },
+  {
+    "id": 86,
+    "text": "How do you ensure that non-technical stakeholders understand your data model or pipeline flow",
+    "type": "text"
+  },
+  {
+    "id": 87,
+    "text": "How do you capture changes discussed in requirement meetings (tools, versioning, ownership)",
+    "type": "text"
+  },
+  {
+    "id": 88,
+    "text": "How do you ensure traceability from requirement → design → implementation → test",
+    "type": "text"
+  },
+  {
+    "id": 89,
+    "text": "What’s your approach to conducting or attending requirement walkthrough meetings",
+    "type": "text"
+  },
+  {
+    "id": 90,
+    "text": "How do you handle cases where implementation deadlines are unrealistic based on the data scope",
+    "type": "text"
+  }
+]
